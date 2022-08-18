@@ -11,7 +11,7 @@ from telegram.ext import CommandHandler
 from telegram import InlineKeyboardMarkup, ParseMode, InlineKeyboardButton
 
 from bot import *
-from bot.helper.ext_utils.bot_utils import is_url, is_magnet, is_gdtot_link, is_mega_link, is_gdrive_link, is_unified_link, is_udrive_link, is_sharer_link, get_content_type, get_readable_time
+from bot.helper.ext_utils.bot_utils import is_url, is_magnet, is_gdtot_link, is_mega_link, is_gdrive_link, is_unified_link, is_udrive_link, get_content_type, get_readable_time
 from bot.helper.ext_utils.exceptions import DirectDownloadLinkException, NotSupportedExtractionArchive
 from bot.helper.ext_utils.shortenurl import short_url
 from bot.helper.mirror_utils.download_utils.aria2_download import add_aria2c_download
@@ -70,7 +70,6 @@ def _mirror_leech(bot, message, isZip=False, extract=False, isQbit=False, isLeec
     is_gdtot = False
     is_unified = False
     is_udrive = False
-    is_sharer = False
     index = 1
     ratio = None
     seed_time = None
@@ -131,7 +130,7 @@ def _mirror_leech(bot, message, isZip=False, extract=False, isQbit=False, isLeec
 
     reply_to = message.reply_to_message
     if reply_to is not None:
-        file_ = next((i for i in [reply_to.document, reply_to.video, reply_to.audio, reply_to.photo] if i), None)
+        file_ = reply_to.document or reply_to.video or reply_to.audio or reply_to.photo or None
         if not reply_to.from_user.is_bot:
             if reply_to.from_user.username:
                 tag = f"@{reply_to.from_user.username}"
@@ -152,14 +151,13 @@ def _mirror_leech(bot, message, isZip=False, extract=False, isQbit=False, isLeec
                     nextmsg = type('nextmsg', (object, ), {'chat_id': message.chat_id, 'message_id': message.reply_to_message.message_id + 1})
                     nextmsg = sendMessage(message.text.replace(str(multi), str(multi - 1), 1), bot, nextmsg)
                     nextmsg.from_user.id = message.from_user.id
-                    multi -= 1
                     sleep(4)
                     Thread(target=_mirror_leech, args=(bot, nextmsg, isZip, extract, isQbit, isLeech)).start()
                 return
             else:
                 link = file_.get_file().file_path
 
-    if not is_url(link) and not is_magnet(link) and not ospath.exists(link):
+    if not is_url(link) and not is_magnet(link):
         help_msg = "<b>Send link along with command line:</b>"
         if isQbit:
             help_msg += "\n<code>/qbcmd</code> {link} pswd: xx [zip/unzip]"
@@ -199,7 +197,6 @@ def _mirror_leech(bot, message, isZip=False, extract=False, isQbit=False, isLeec
                 is_gdtot = is_gdtot_link(link)
                 is_unified = is_unified_link(link)
                 is_udrive = is_udrive_link(link)
-                is_sharer = is_sharer_link(link)
                 link = direct_link_generator(link)
                 LOGGER.info(f"Generated link: {link}")
             except DirectDownloadLinkException as e:
@@ -216,7 +213,7 @@ def _mirror_leech(bot, message, isZip=False, extract=False, isQbit=False, isLeec
             gmsg += f"Use /{BotCommands.UnzipMirrorCommand[0]} to extracts Google Drive archive file"
             sendMessage(gmsg, bot, message)
         else:
-            Thread(target=add_gd_download, args=(link, f'{DOWNLOAD_DIR}{listener.uid}', listener, is_gdtot, is_unified, is_udrive, is_sharer, name)).start()
+            Thread(target=add_gd_download, args=(link, f'{DOWNLOAD_DIR}{listener.uid}', listener, is_gdtot, is_unified, is_udrive, name)).start()
     elif is_mega_link(link):
         if MEGA_KEY is not None:
             Thread(target=MegaDownloader(listener).add_download, args=(link, f'{DOWNLOAD_DIR}{listener.uid}/')).start()

@@ -136,8 +136,7 @@ def _clone(message, bot):
     is_gdtot = is_gdtot_link(link)
     is_unified = is_unified_link(link)
     is_udrive = is_udrive_link(link)
-    is_sharer = is_sharer_link(link)
-    if (is_gdtot or is_unified or is_udrive or is_sharer):
+    if (is_gdtot or is_unified or is_udrive):
         try:
             msg = sendMessage(f"Processing: <code>{link}</code>", bot, message)
             LOGGER.info(f"Processing: {link}")
@@ -147,8 +146,6 @@ def _clone(message, bot):
                 link = gdtot(link)
             if is_udrive:
                 link = udrive(link)
-            if is_sharer:
-                link = sharer_pw(link)
             LOGGER.info(f"Processing GdToT: {link}")
             deleteMessage(bot, msg)
         except DirectDownloadLinkException as e:
@@ -218,7 +215,7 @@ def _clone(message, bot):
             msg = sendMarkup(result + cc + pmwarn + logwarn + warnmsg, bot, message, button)
             LOGGER.info(f'Cloning Done: {name}')
             Thread(target=auto_delete_upload_message, args=(bot, message, msg)).start()
-        if (is_gdtot or is_unified or is_udrive or is_sharer):
+        if (is_gdtot or is_unified or is_udrive):
             gd.deletefile(link) 
 
         if MIRROR_LOGS:	
@@ -237,7 +234,7 @@ def _clone(message, bot):
 
 
     else:
-        sendMessage('Send Gdrive or GDToT/AppDrive/DriveApp/GDFlix/DriveBit/DriveLinks/DrivePro/DriveAce/DriveSharer/HubDrive/DriveHub/KatDrive/Kolop/DriveFire/vickyshare/SharerPw link along with command or by replying to the link by command', bot, message)
+        sendMessage('Send Gdrive or GDToT/AppDrive/DriveApp/GDFlix/DriveBit/DrivePro/DriveAce/DriveSharer/HubDrive/DriveHub/KatDrive/Kolop/DriveFire link along with command or by replying to the link by command', bot, message)
 
 @new_thread
 def cloneNode(update, context):

@@ -316,21 +316,21 @@ class MirrorLeechListener:
                         pass
                 except Exception:
                     pass
-            if reply_to is not None:
-                try:
-                    reply_text = reply_to.text
-                    if is_url(reply_text):
-                        source_link = reply_text.strip()
-                        if is_magnet(source_link):
-                            link = telegraph.create_page(
-                                title='WeebZone Source Link',
-                                content=source_link,
-                            )["path"]
-                            buttons.buildbutton(f"🔗 Source Link", f"https://graph.org/{link}")
-                        else:
-                            buttons.buildbutton(f"🔗 Source Link", source_link)
-                except Exception:
-                    pass
+                if reply_to is not None:
+                    try:
+                        reply_text = reply_to.text
+                        if is_url(reply_text):
+                            source_link = reply_text.strip()
+                            if is_magnet(source_link):
+                                link = telegraph.create_page(
+                                    title='WeebZone Source Link',
+                                    content=source_link,
+                                )["path"]
+                                buttons.buildbutton(f"🔗 Source Link", f"https://graph.org/{link}")
+                            else:
+                                buttons.buildbutton(f"🔗 Source Link", source_link)
+                    except Exception:
+                        pass
             else:
                 pass
             if EMOJI_THEME is True:

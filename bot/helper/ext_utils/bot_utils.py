@@ -347,11 +347,8 @@ def is_gdtot_link(url: str):
     return bool(url)
 
 def is_unified_link(url: str):
-    url1 = re_match(r'https?://(anidrive|driveroot|driveflix|indidrive|drivehub)\.in/\S+', url)
-    url = re_match(r'https?://(appdrive|driveapp|driveace|gdflix|drivelinks|drivebit|drivesharer|drivepro)\.\S+', url)
-    if bool(url1) == True:
-        return bool(url1)
-    elif bool(url) == True:
+    url = re_match(r'https?://(appdrive|driveapp|driveace|gdflix|drivebit|drivesharer|drivepro)\.\S+', url)
+    if bool(url) == True:
         return bool(url)
     else:
         return False
@@ -362,9 +359,6 @@ def is_udrive_link(url: str):
     else:
         url = re_match(r'https?://(hubdrive|katdrive|kolop|drivefire|drivebuzz)\.\S+', url)
         return bool(url)
-
-def is_sharer_link(url: str):
-    url = re_match(r'https?://(sharer)\.pw/\S+', url)
 
 def is_mega_link(url: str):
     return "mega.nz" in url or "mega.co.nz" in url
